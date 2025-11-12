@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Family Messages</title>
+		<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+		<link rel="stylesheet" href="../static/style.css">
+	</head>
+	<body>
+		<div class="topnav" id="myTopnav">
+				<button class="activebutton">
+					family chat application
+				</button>
+		</div>
+		<div class="left">
+			<div style="padding: 10px;">
+			<h1>Home chat web app</h1>
+			<p class="fake-message">Made by <a href="https://abhinav-jay.github.io" target="_blank" class="fake-message">Abhinav Jayesh</a></p>
+			</div>
+		</div>
+		<div class="chat">
+			<div class="messages" id="messages">
+				{% for each in messages %}
+				<div><div class="message"><p class=""> {{ each.content }}</p></div></div>
+				{% endfor %}
+			</div>
+			<form id="chat-form">
+				<input type="text" id="message-input" style="float: left;" placeholder="Type your message" autocomplete="off" required>
+				<button id="send" type="submit">Send</button>
+			</form>
+		</div>
+
+		<script>
+			const socket = io();
+
+			const form = document.getElementById('chat-form');
+			const input = document.getElementById('message-input');
+			const messagesDiv = document.getElementById('messages');
+
+			form.addEventListener('submit', function(e){
+				e.preventDefault();
+				const message = input.value;
+				socket.emit('send_message', {message: message});
+				input.value = '';
+			});
+
+			socket.on('receive_message', function(data){
+				const div = document.createElement('div');
+				div.classList.add('message');
+				div.innerHTML = `<p class="msg">${data.message}</p>`;
+				messagesDiv.appendChild(div);
+				messagesDiv.scrollTop = messagesDiv.scrollHeight;
+			});
+			window.scrollTo(0, document.body.scrollHeight);
+		</script>
+	</body>
+</html>
